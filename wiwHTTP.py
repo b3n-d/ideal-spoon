@@ -41,7 +41,6 @@ state_url = "https://api.wheniwork.com/2/punch/state"
 state_params = {'deviceType': 'web'}
 state_headers = {'w-token': w_token ,'w-userid': w_user_id }
 state_check_text = requests.get(state_url, params=state_params, headers=state_headers).text
-#global state_check
 state_check = json.loads(state_check_text)
        
 # header to be used for most requests 
@@ -67,10 +66,8 @@ if "break" in state_check:
     lunch_id = str(state_check['break']['id'])
 
 def clockIn(): 
-#    stateCheck()
     if can_clock: 
         clockin_url = "https://api.wheniwork.com/2/times/clockin"
-        # building dict with id vars to turn into json body data     
         clockin_dict = {
             "id": w_user_id,
             "notes": "", 
@@ -81,7 +78,6 @@ def clockIn():
         json_dict = json.dumps(clockin_dict)
         clockin = requests.post(clockin_url, headers=wIdTokenIso_header, data=json_dict).text
         clockin = json.loads(clockin)
-        #print(clockin)
         if "time" in clockin: 
             timestamp = clockin['time']['start_time']
             print('Clocked in at ' +  timestamp)
@@ -90,8 +86,7 @@ def clockIn():
     else:
         print('Unable to clock in')
 
-def clockOut(): # add confirmation / error checking 
-#    stateCheck()
+def clockOut(): 
     if can_clockOut:
         clockOut_url = "https://api.wheniwork.com/2/times/clockout"
         clockOut_dict = {
@@ -101,7 +96,6 @@ def clockOut(): # add confirmation / error checking
         clockOut_json = json.dumps(clockOut_dict)
         clockOut = requests.post(clockOut_url, headers=wIdTokenIso_header, data=clockOut_json).text
         clockOut = json.loads(clockOut) 
-        #print(clockOut)
         if "time" in clockOut: 
             timestamp = clockOut['time']['end_time']
             print('Clocked out at ' +  timestamp)
@@ -111,8 +105,7 @@ def clockOut(): # add confirmation / error checking
     else: 
         print('Unable to clock out')
 
-def takeLunch(): # add confirmation / error checking 
-#    stateCheck()
+def takeLunch(): 
     if can_lunch:  
         lunch_url = "https://api.wheniwork.com/v3/shift-breaks"
         time_id = str(state_check['punchTimeId']) 
@@ -123,8 +116,7 @@ def takeLunch(): # add confirmation / error checking
             }
         lunch_json = json.dumps(lunch_dict)
         lunch_start = requests.post(lunch_url, headers=wIdTokenIso_header, data=lunch_json).text 
-       # print(lunch_start)
-        if "data" in lunch_end:
+        if "data" in lunch_start:
             timestamp = lunch_start['data']['start']
             print('Lunch started at ' + timestamp)
         else:
@@ -132,8 +124,7 @@ def takeLunch(): # add confirmation / error checking
     else:
         print('Unable to start lunch')
 
-def endLunch(): # add confirmation / error checking 
-#    stateCheck()
+def endLunch(): 
     if can_endlunch:
         lunch_id = str(state_check['break']['id'])
         lunch_url = "https://api.wheniwork.com/v3/shift-breaks/" + lunch_id # lunch end url must have lunch id 
@@ -145,7 +136,6 @@ def endLunch(): # add confirmation / error checking
         lunch_json = json.dumps(lunch_dict) 
         lunch_end = requests.patch(lunch_url, headers=wIdTokenIso_header, data=lunch_json).text 
         lunch_end = json.loads(lunch_end) 
-        #print(lunch_end) 
         if "data" in lunch_end:
             timestamp = lunch_end['data']['end']
             print('Lunch ended at ' + timestamp)
