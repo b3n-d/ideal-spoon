@@ -116,8 +116,9 @@ def takeLunch():
             }
         lunch_json = json.dumps(lunch_dict)
         lunch_start = requests.post(lunch_url, headers=wIdTokenIso_header, data=lunch_json).text 
+        lunch_start = json.loads(lunch_start)
         if "data" in lunch_start:
-            timestamp = lunch_start['data']['start']
+            timestamp = lunch_start['data']['start'] # got back list on 9/07/21, need to figure out what's going on 
             print('Lunch started at ' + timestamp)
         else:
             print('Could not start lunch')
